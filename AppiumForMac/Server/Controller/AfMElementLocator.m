@@ -46,6 +46,10 @@
 	{
 		return [[AfMElementLocator alloc] initWithSession:session strategy:AppiumMacLocatoryStrategyTagName value:value];
 	}
+    else if ([using isEqualToString:@"class name"])
+    {
+        return [[AfMElementLocator alloc] initWithSession:session strategy:AppiumMacLocatoryStrategyClassName value:value];
+    }
 	else if ([using isEqualToString:@"xpath"])
 	{
 		return [[AfMElementLocator alloc] initWithSession:session strategy:AppiumMacLocatoryStrategyXPath value:value];
@@ -60,16 +64,23 @@
 		case AppiumMacLocatoryStrategyID:
 		{
 			if (element == nil)
-			{
 				return NO;
-			}
 			NSString *identifier = [element valueForAttribute:@"AXIdentifier"];
+            if (identifier == nil)
+                identifier = [element valueForAttribute:@"AXDOMIdentifier"];
 			return identifier != nil && [self.value isEqualToString:identifier];
 		}
 		case AppiumMacLocatoryStrategyName:
 			return element != nil && [self.value isEqualToString:element.AXTitle];
 		case AppiumMacLocatoryStrategyTagName:
 			return element != nil && [self.value isEqualToString:element.AXRole];
+        case AppiumMacLocatoryStrategyClassName:
+        {
+            if (element == nil)
+                return NO;
+            NSString *subrole = [element valueForAttribute:@"AXSubrole"];
+            return subrole != nil && [self.value isEqualToString:subrole];
+        }
 		default:
 			return NO;
 	}
